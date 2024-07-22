@@ -13,8 +13,22 @@ import {
 export default function Navbar() {
   const [activeLink, setActiveLink] = useState('#Home')
   const [hoveredLink, setHoveredLink] = useState(null)
-  const [hoveredSubLink, setHoveredSubLink] = useState(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [dropdownTimeout, setDropdownTimeout] = useState(null)
+
+  const handleMouseEnter = link => {
+    if (dropdownTimeout) {
+      clearTimeout(dropdownTimeout)
+    }
+    setHoveredLink(link)
+  }
+
+  const handleMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setHoveredLink(null)
+    }, 500) // Delay hiding the dropdown
+    setDropdownTimeout(timeout)
+  }
 
   return (
     <nav className='shadow-sm'>
@@ -44,58 +58,43 @@ export default function Navbar() {
             <div
               key={link}
               className='group relative flex items-center'
-              onMouseEnter={() => setHoveredLink(link)}
-              onMouseLeave={() => {
-                if (link === '#About') {
-                  setHoveredLink(null)
-                  setHoveredSubLink(null)
-                }
-              }}
+              onMouseEnter={() => handleMouseEnter(link)}
+              onMouseLeave={handleMouseLeave}
             >
               <a
                 href={link}
                 onClick={() => setActiveLink(link)}
-                className={`relative flex items-center pl-6 text-base text-white md:text-lg ${activeLink === link || (hoveredLink === link && !hoveredSubLink) ? 'brightness-90 filter' : ''} hover:brightness-90 hover:filter`}
+                className={`relative flex items-center pl-6 text-base text-white md:text-lg ${activeLink === link || hoveredLink === link ? 'brightness-90 filter' : ''} hover:brightness-90 hover:filter`}
               >
                 {link.slice(1)} {/* Displays link text without '#' */}
                 {link === '#About' && (
                   <FaChevronDown
-                    className={`ml-2 transition-colors duration-300 ${hoveredLink === '#About' && !hoveredSubLink ? 'brightness-90 filter' : ''}`}
+                    className={`ml-2 transition-colors duration-300 ${hoveredLink === '#About' ? 'brightness-90 filter' : ''}`}
                     size={14}
                   />
                 )}
               </a>
               {link === '#About' && (
                 <div
-                  className={`absolute left-0 top-full mt-2 w-48 border bg-white shadow-lg transition-opacity duration-300 ${hoveredLink === '#About' || activeLink === '#About' ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100`}
+                  className={`absolute left-0 top-full mt-1 w-48 border bg-white shadow-lg transition-opacity duration-300 ${hoveredLink === '#About' ? 'block opacity-100' : 'hidden opacity-0'}`}
                 >
                   <div
-                    className={`flex items-center p-2 ${hoveredSubLink === '#AboutUs' ? 'brightness-90 filter' : ''}`}
-                    onMouseEnter={() => setHoveredSubLink('#AboutUs')}
-                    onMouseLeave={() => setHoveredSubLink(null)}
+                    className={`flex items-center p-2 ${activeLink === '#AboutUs' ? 'brightness-90 filter' : ''}`}
                   >
-                    {hoveredSubLink === '#AboutUs' && (
-                      <FaArrowRight className='mr-2 text-red-600' size={16} />
-                    )}
                     <a
                       href='#AboutUs'
-                      className='block px-4 py-2 hover:brightness-90 hover:filter'
+                      className='block px-4 py-2 hover:text-red-700 hover:brightness-90 hover:filter'
                       onClick={() => setActiveLink('#AboutUs')}
                     >
                       About Us
                     </a>
                   </div>
                   <div
-                    className={`flex items-center p-2 ${hoveredSubLink === '#Mission' ? 'brightness-90 filter' : ''}`}
-                    onMouseEnter={() => setHoveredSubLink('#Mission')}
-                    onMouseLeave={() => setHoveredSubLink(null)}
+                    className={`flex items-center p-2 ${activeLink === '#Mission' ? 'brightness-90 filter' : ''}`}
                   >
-                    {hoveredSubLink === '#Mission' && (
-                      <FaArrowRight className='mr-2 text-red-600' size={16} />
-                    )}
                     <a
                       href='#Mission'
-                      className='block px-4 py-2 hover:brightness-90 hover:filter'
+                      className='block px-4 py-2 hover:text-red-700 hover:brightness-90 hover:filter'
                       onClick={() => setActiveLink('#Mission')}
                     >
                       Mission
@@ -104,7 +103,7 @@ export default function Navbar() {
                 </div>
               )}
               <FaArrowRight
-                className={`absolute right-full top-1/2 -translate-y-1/2 transform transition-colors duration-300 ${activeLink === link || (hoveredLink === link && !hoveredSubLink) ? 'text-white opacity-100 brightness-90 filter' : 'text-white opacity-0'}`}
+                className={`absolute right-full top-1/2 -translate-y-1/2 transform transition-colors duration-300 ${activeLink === link || hoveredLink === link ? 'text-white opacity-100 brightness-90 filter' : 'text-white opacity-0'}`}
                 size={16}
               />
             </div>
