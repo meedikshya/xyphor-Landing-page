@@ -20,6 +20,10 @@ const config: Config = {
       },
       lineHeight: {
         0: '0'
+      },
+      screens: {
+        xs: '400px',
+        xxs: '380px'
       }
     }
   },
